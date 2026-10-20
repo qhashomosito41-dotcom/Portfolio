@@ -2,7 +2,7 @@
   "name": "client",
   "private": true,
   "version": "1.0.0",
-  "homepage": ".",
+  "homepage": "/Portfolio/",
   "type": "module",
   "scripts": {
     "dev": "vite",
