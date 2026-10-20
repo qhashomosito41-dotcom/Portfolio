@@ -1,0 +1,223 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           Int            @id @default(autoincrement())
+  email        String         @unique @db.VarChar(191)
+  name         String         @db.VarChar(120)
+  passwordHash String         @db.VarChar(255)
+  lastLoginAt  DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sessions     AdminSession[]
+}
+
+model AdminSession {
+  id          String    @id @default(cuid())
+  tokenHash   String    @unique @db.VarChar(64)
+  csrfToken   String    @db.VarChar(64)
+  adminUserId Int
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  lastUsedAt  DateTime  @default(now())
+  ipAddress   String?   @db.VarChar(64)
+  userAgent   String?   @db.VarChar(255)
+  createdAt   DateTime  @default(now())
+
+  @@index([adminUserId])
+  @@index([expiresAt])
+}
+
+model Profile {
+  id                    Int      @id @default(1)
+  fullName              String   @db.VarChar(120)
+  professionalTitle     String   @db.VarChar(180)
+  headline              String   @db.VarChar(220)
+  heroIntro             String   @db.Text
+  heroTechSummary       String?  @db.Text
+  biography             String   @db.Text
+  academicBackground    String?  @db.Text
+  approach              String?  @db.Text
+  careerObjectives      String?  @db.Text
+  professionalInterests String?  @db.Text
+  location              String?  @db.VarChar(120)
+  contactEmail          String?  @db.VarChar(191)
+  profileImagePath      String?  @db.VarChar(255)
+  websiteTitle          String   @db.VarChar(180)
+  websiteDescription    String   @db.Text
+  updatedAt             DateTime @updatedAt
+}
+
+model Project {
+  id                  Int            @id @default(autoincrement())
+  title               String         @db.VarChar(180)
+  slug                String         @unique @db.VarChar(191)
+  shortDescription    String         @db.Text
+  fullDescription     String         @db.Text
+  category            String         @db.VarChar(80)
+  projectStatus       String         @db.VarChar(40) @default("Completed")
+  contribution        String?        @db.Text
+  keyFeatures         String?        @db.Text
+  challenges          String?        @db.Text
+  solutions           String?        @db.Text
+  technologies        String?        @db.Text
+  repositoryUrl       String?        @db.VarChar(500)
+  liveUrl             String?        @db.VarChar(500)
+  startDate           DateTime?
+  endDate             DateTime?
+  featured            Boolean        @default(false)
+  published           Boolean        @default(false)
+  sortOrder           Int            @default(0)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  images              ProjectImage[]
+
+  @@index([published, sortOrder])
+  @@index([category])
+  @@index([featured])
+}
+
+model ProjectImage {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  filePath  String   @db.VarChar(255)
+  altText   String?  @db.VarChar(255)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([projectId, sortOrder])
+}
+
+model Skill {
+  id               Int      @id @default(autoincrement())
+  name             String   @db.VarChar(120)
+  category         String   @db.VarChar(100)
+  description      String?  @db.Text
+  proficiencyLabel String?  @db.VarChar(80)
+  context          String?  @db.VarChar(255)
+  sortOrder        Int      @default(0)
+  visible          Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([name, category])
+  @@index([category, sortOrder])
+  @@index([visible])
+}
+
+model Experience {
+  id               Int      @id @default(autoincrement())
+  organization     String   @db.VarChar(180)
+  position         String   @db.VarChar(180)
+  type             String   @db.VarChar(80)
+  location         String?  @db.VarChar(120)
+  startDate        DateTime
+  endDate          DateTime?
+  isCurrent        Boolean  @default(false)
+  responsibilities String?  @db.Text
+  achievements     String?  @db.Text
+  technologies     String?  @db.Text
+  evidenceUrl      String?  @db.VarChar(500)
+  published        Boolean  @default(true)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([published, sortOrder])
+}
+
+model Education {
+  id             Int      @id @default(autoincrement())
+  institution    String   @db.VarChar(180)
+  qualification  String   @db.VarChar(220)
+  fieldOfStudy   String?  @db.VarChar(180)
+  location       String?  @db.VarChar(120)
+  startDate      DateTime?
+  endDate        DateTime?
+  isCurrent      Boolean  @default(true)
+  description    String?  @db.Text
+  modules        String?  @db.Text
+  achievements   String?  @db.Text
+  published      Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([published, sortOrder])
+}
+
+model Certification {
+  id              Int       @id @default(autoincrement())
+  title           String    @db.VarChar(220)
+  provider        String    @db.VarChar(180)
+  completionDate  DateTime?
+  description     String?   @db.Text
+  certificatePath String?   @db.VarChar(255)
+  credentialId    String?   @db.VarChar(180)
+  verificationUrl String?   @db.VarChar(500)
+  sortOrder       Int       @default(0)
+  published       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([published, sortOrder])
+}
+
+model CVDocument {
+  id           Int      @id @default(autoincrement())
+  title        String   @db.VarChar(180)
+  filePath     String   @db.VarChar(255)
+  originalName String   @db.VarChar(255)
+  mimeType     String   @db.VarChar(120)
+  fileSize     Int
+  isActive     Boolean  @default(true)
+  isPublic     Boolean  @default(false)
+  uploadedAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  @@index([isActive, isPublic])
+}
+
+model ContactMessage {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(120)
+  email      String   @db.VarChar(191)
+  subject    String   @db.VarChar(180)
+  message    String   @db.Text
+  reason     String?  @db.VarChar(80)
+  isRead     Boolean  @default(false)
+  isArchived Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([isRead, createdAt])
+  @@index([isArchived, createdAt])
+}
+
+model SocialLink {
+  id        Int      @id @default(autoincrement())
+  platform  String   @db.VarChar(80)
+  label     String   @db.VarChar(120)
+  url       String   @db.VarChar(500)
+  icon      String?  @db.VarChar(60)
+  sortOrder Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([visible, sortOrder])
+}
+
+model SiteSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique @db.VarChar(120)
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,58 @@
+{
+  "name": "server",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src tests prisma",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "admin:init": "tsx prisma/init-admin.ts",
+    "db:test:prepare": "tsx tests/prepare-test-db.ts",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.0.2",
+    "@prisma/client": "^6.16.2",
+    "compression": "^1.7.5",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.0.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^10.1.7",
+    "pino": "^9.5.0",
+    "pino-http": "^10.3.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.10.5",
+    "@types/nodemailer": "^8.0.2",
+    "@types/supertest": "^6.0.2",
+    "mysql2": "^3.12.0",
+    "pino-pretty": "^13.0.0",
+    "prisma": "^6.16.2",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "deepmerge-ts": "^8.0.2"
+  }
+}
